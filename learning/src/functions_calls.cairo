@@ -16,11 +16,20 @@ fn scope_fun_ex(x: u8){
     println!("{}", a);
 }
 
+fn internal_scope_fun_ex(x: u8){
+    let a: u8 = x;
+    {
+        let a: u8 = a + 20;
+        println!("{}", a);
+    }
+    println!("{}", a);
+}
 
 fn main(){
     scope_fun_ex(10);
-    let a:u8 = 20;
-    let b:u8 = 20; 
-    println!("{}", add(:a, :b));
-    println!("{}", sub(sub_a:a, sub_b:b));
+    internal_scope_fun_ex(10); // Expected output: 30, 10
+    // let a:u8 = 20;
+    // let b:u8 = 20; 
+    // println!("{}", add(:a, :b));
+    // println!("{}", sub(sub_a:a, sub_b:b));
 }
