@@ -1252,8 +1252,8 @@
   },
   "contracts": [
     {
-      "address": "0x3618984765f22834aeba11233b87085a602e2c3ba1be142d00b995e28b06a22",
-      "class_hash": "0x2a514219b866c71e1bae716c3ef1a34597c51c0fe76f78ddf9ebfdd6ff06e5e",
+      "address": "0x73a20bf1f5ebe9caf16bc08fb07434618300a55a764395a22f4fdde8237a547",
+      "class_hash": "0x6cbb5ab40ad7b48dff70edeacc4902a9eeae63a9e36456f9f908aedb904fbd2",
       "abi": [
         {
           "type": "impl",
@@ -1308,75 +1308,51 @@
         {
           "type": "impl",
           "name": "ActionsImpl",
-          "interface_name": "dojo_starter::IActions"
+          "interface_name": "dojo_starter::systems::actions::IActions"
         },
         {
-          "type": "struct",
-          "name": "dojo_starter::Player",
-          "members": [
+          "type": "enum",
+          "name": "dojo_starter::models::Direction",
+          "variants": [
             {
-              "name": "player_id",
-              "type": "core::integer::u32"
+              "name": "Left",
+              "type": "()"
             },
             {
-              "name": "name",
-              "type": "core::felt252"
+              "name": "Right",
+              "type": "()"
             },
             {
-              "name": "health",
-              "type": "core::integer::u32"
+              "name": "Up",
+              "type": "()"
             },
             {
-              "name": "tool",
-              "type": "core::felt252"
+              "name": "Down",
+              "type": "()"
             }
           ]
         },
         {
           "type": "interface",
-          "name": "dojo_starter::IActions",
+          "name": "dojo_starter::systems::actions::IActions",
           "items": [
             {
               "type": "function",
-              "name": "add_player",
+              "name": "spawn",
               "inputs": [],
               "outputs": [],
               "state_mutability": "external"
             },
             {
               "type": "function",
-              "name": "update_player",
+              "name": "move",
               "inputs": [
                 {
-                  "name": "player_id",
-                  "type": "core::integer::u32"
-                },
-                {
-                  "name": "health",
-                  "type": "core::integer::u32"
-                },
-                {
-                  "name": "tool",
-                  "type": "core::felt252"
+                  "name": "direction",
+                  "type": "dojo_starter::models::Direction"
                 }
               ],
               "outputs": [],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "get_player",
-              "inputs": [
-                {
-                  "name": "player_id",
-                  "type": "core::integer::u32"
-                }
-              ],
-              "outputs": [
-                {
-                  "type": "dojo_starter::Player"
-                }
-              ],
               "state_mutability": "external"
             }
           ]
@@ -1480,7 +1456,7 @@
         },
         {
           "type": "event",
-          "name": "dojo_starter::actions::Event",
+          "name": "dojo_starter::systems::actions::actions::Event",
           "kind": "enum",
           "variants": [
             {
@@ -1500,9 +1476,8 @@
       "tag": "dojo_starter-actions",
       "selector": "0x7a1c71029f2d0b38e3ac89b09931d08b6e48417e079c289ff19a8698d0cba33",
       "systems": [
-        "add_player",
-        "update_player",
-        "get_player",
+        "spawn",
+        "move",
         "upgrade"
       ]
     }
@@ -1510,10 +1485,29 @@
   "models": [
     {
       "members": [],
-      "class_hash": "0x6bc0f09164647ddf97387db6cae9b22d1b13d9ce0c085feaf5d177aae0d60fb",
-      "tag": "dojo_starter-Player",
-      "selector": "0x1cccb05d982525914bcdce99f0af51556dcb8d9f0e2317c0ad0221d13a809f9"
+      "class_hash": "0x3f52c6cf17db224f4e7f88629adf7e907ff110baa0616c7e8ef17c5aecf1b1b",
+      "tag": "dojo_starter-DirectionsAvailable",
+      "selector": "0x77844f1facb51e60e546a9832d56c6bd04fa23be4fd5b57290caae5e9a3c1e4"
+    },
+    {
+      "members": [],
+      "class_hash": "0x5f79e21312b142fc289d3bd1e0f4c65ac3c4e532252c6fb1ad48b718d892dc",
+      "tag": "dojo_starter-Moves",
+      "selector": "0x2a29373f1af8348bd366a990eb3a342ef2cbe5e85160539eaca3441a673f468"
+    },
+    {
+      "members": [],
+      "class_hash": "0x2283c68ecba5c60bbbbd3b00659808a02244468e41a1d2cdba1312d65b83594",
+      "tag": "dojo_starter-Position",
+      "selector": "0x2ac8b4c190f7031b9fc44312e6b047a1dce0b3f2957c33a935ca7846a46dd5b"
     }
   ],
-  "events": []
+  "events": [
+    {
+      "members": [],
+      "class_hash": "0x3dca5564f84050b20e66a2e5e7619201502d241b223ea73cfc05f29e6e20ea1",
+      "tag": "dojo_starter-Moved",
+      "selector": "0x504403e5c02b6442527721fc464d9ea5fc8f1ee600ab5ccd5c0845d36fd45f1"
+    }
+  ]
 }

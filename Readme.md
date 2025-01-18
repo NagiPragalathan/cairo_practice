@@ -51,3 +51,13 @@ scarb cairo-run
     // ByteArray
 -----------------------------------------
 
+
+to generate the type script file for the contract
+
+
+
+torii -w 0x0525177c8afe8680d7ad1da30ca183e482cfcd6404c1e09d83fd3fa2994fd4b8 --http.cors_origins '*'
+0x0525177c8afe8680d7ad1da30ca183e482cfcd6404c1e09d83fd3fa2994fd4b8
+
+DOJO_MANIFEST_PATH="../Scarb.toml" sozo build --typescript --bindings-output ./src/dojo/
+
