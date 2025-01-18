@@ -1,6 +1,6 @@
 use starknet::{ContractAddress};
 
-#[derive(Copy, Drop, Serde, Debug)]
+#[derive(Copy, Drop, Serde, Debug)] 
 #[dojo::model]
 pub struct Moves {
     #[key]
