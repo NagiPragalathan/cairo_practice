@@ -4,21 +4,26 @@ import './index.css';
 import { init } from '@dojoengine/sdk';
 import { schema } from './typescript/models.gen.ts';
 import App from './App';
+import { DojoSdkProvider } from "@dojoengine/sdk/react";
+import { dojoConfig } from "../dojoConfig.ts";
+import { setupWorld } from "./typescript/contracts.gen.ts";
+import StarknetProvider from "./starknet-provider.tsx";
+
 
 export const DojoContext = createContext(null);
 
 async function main() {
   try {
-    const db = await init(
+    const sdk = await init(
       {
         client: {
           rpcUrl: 'http://localhost:5050', // Local Katana
-          toriiUrl: 'http://localhost:8080', // Local Torii
+          toriiUrl: 'http://localhost:8080', // Local  
           relayUrl: '/ip4/127.0.0.1/tcp/9090/tcp/80',
           worldAddress: '0x0525177c8afe8680d7ad1da30ca183e482cfcd6404c1e09d83fd3fa2994fd4b8',
         },
         domain: {
-          name: 'MyDojoProject',
+          name: 'dojo_starter',
         },
       },
       schema
@@ -26,10 +31,16 @@ async function main() {
 
     createRoot(document.getElementById('root')).render(
       <StrictMode>
-        <DojoContext.Provider value={db}>
-          <App />
-        </DojoContext.Provider>
-      </StrictMode>
+      <DojoSdkProvider
+          sdk={sdk}
+          dojoConfig={dojoConfig}
+          clientFn={setupWorld}
+      >
+          <StarknetProvider>
+              <App />
+          </StarknetProvider>
+      </DojoSdkProvider>
+  </StrictMode>
     );
   } catch (error) {
     console.error('Error initializing app:', error);
