@@ -56,6 +56,14 @@ to generate the type script file for the contract
 
 DOJO_MANIFEST_PATH="Scarb.toml" sozo build --typescript --bindings-output ../src/
 
-torii -w 0x0525177c8afe8680d7ad1da30ca183e482cfcd6404c1e09d83fd3fa2994fd4b8 --http.cors_origins '*'
-0x0525177c8afe8680d7ad1da30ca183e482cfcd6404c1e09d83fd3fa2994fd4b8
+torii -w 0x0190386ce184452b6fed8ff0b17b4d42ea47cdf8a2d1f0a98be083f53b41662f --http.cors_origins '*'
+0x07bfc0169f3e20d0144b6e830bfbc2709906d91a76ece26fefab062fd87f738e
 
+
+
+
+1. sozo build
+
+2. sozo migrate
+
+3.torii -w 0x0190386ce184452b6fed8ff0b17b4d42ea47cdf8a2d1f0a98be083f53b41662f --http.cors_origins '*'
