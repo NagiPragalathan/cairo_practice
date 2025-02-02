@@ -17,13 +17,16 @@ async function main() {
     const sdk = await init(
       {
         client: {
-          rpcUrl: 'http://localhost:5050', // Local Katana
-          toriiUrl: 'http://localhost:8080', // Local  
-          relayUrl: '/ip4/127.0.0.1/tcp/9090/tcp/80',
-          worldAddress: '0x0525177c8afe8680d7ad1da30ca183e482cfcd6404c1e09d83fd3fa2994fd4b8',
+          rpcUrl: dojoConfig.rpcUrl,
+          toriiUrl: dojoConfig.toriiUrl,
+          relayUrl: dojoConfig.relayUrl,
+          worldAddress: dojoConfig.manifest.world.address,
         },
         domain: {
           name: 'dojo_starter',
+          version: "1.0",
+          chainId: "KATANA",
+          revision: "1",
         },
       },
       schema

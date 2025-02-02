@@ -1,108 +1,155 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect , useMemo} from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
+
+import {  QueryBuilder } from "@dojoengine/sdk";
+import { AccountInterface, addAddressPadding, CairoCustomEnum } from "starknet";
+import { ModelsMapping } from "./typescript/models.gen.ts";
+
+
+import { getEntityIdFromKeys } from "@dojoengine/utils";
+
 import { useAccount } from "@starknet-react/core";
 import { WalletAccount } from "./wallet-account.tsx";
 import { init } from "@dojoengine/sdk";
 import { schema } from "./typescript/models.gen.ts"; // Adjust schema path if needed
+import { useDojoSDK, useModel } from "@dojoengine/sdk/react";
+import { useSystemCalls } from "./useSystemCalls.ts";
 
 function App() {
-  const [client, setClient] = useState(null);
-  const { account } = useAccount();
 
-  // Initialize Dojo client
-  useEffect(() => {
-    async function initializeDojoClient() {
-      try {
-        const dojoClient = await init(
-          {
-            client: {
-              rpcUrl: "http://localhost:5050", // Replace with your RPC URL
-              toriiUrl: "http://localhost:8080", // Replace with your Torii URL
-              relayUrl: "/ip4/127.0.0.1/tcp/9090", // Corrected relay URL format
-              worldAddress: "0x0525177c8afe8680d7ad1da30ca183e482cfcd6404c1e09d83fd3fa2994fd4b8", // Replace with your deployed world address
-            },
-            domain: {
-              name: "MyDojoProject",
-              version: "1.0",
-              chainId: "1",
-              revision: "1",
-            },
+      const { useDojoStore, client, sdk } = useDojoSDK();
+
+   const { account } = useAccount();
+
+   const state = useDojoStore((state) => state);
+   const entities = useDojoStore((state) => state.entities);
+
+   const { spawn } = useSystemCalls();
+
+
+   const entityId = useMemo(() => {
+    if (account) {
+        return getEntityIdFromKeys([BigInt(account.address)]);
+    }
+    return BigInt(0);
+}, [account]);
+
+
+
+useEffect(() => {
+  let unsubscribe;
+
+  const subscribe = async (account) => {
+      const subscription = await sdk.subscribeEntityQuery({
+          query: new QueryBuilder()
+              .namespace("dojo_starter", (n) =>
+                  n
+                      .entity("Player", (e) =>
+                          e.eq(
+                              "health",
+                              100
+                          )
+                      )
+                     
+              )
+              .build(),
+          callback: ({ error, data }) => {
+              if (error) {
+                  console.error("Error setting up entity sync:", error);
+              } else if (
+                  data &&
+                  data[0].entityId !== "0x0"
+              ) {
+                  state.updateEntity(data[0]);
+              }
           },
-          schema // Pass the schema generated with sozo
-        );
-        console.log("Initialized Dojo client:", dojoClient);
-        setClient(dojoClient);
-      } catch (error) {
-        console.error("Error initializing Dojo client:", error);
-      }
-    }
-
-    initializeDojoClient();
-  }, []);
-
-  // Add a new player
-  async function addPlayer() {
-    if (!client) {
-      console.error("Dojo client is not initialized.");
-      return;
-    }
-
-    const playerData = {
-      player_id: 1,
-      name: "John",
-      health: 100,
-      tool: "Sword",
-    };
-
-    try {
-      console.log("Attempting to add player:", playerData);
-
-      // Generate a typed message for the `add_player` action
-      const message = client.generateTypedData("world-Player", {
-        id: playerData.player_id,
-        name: playerData.name,
-        health: playerData.health,
-        tool: playerData.tool,
       });
 
-      // Sign the message using the account signer
-      const signature = await account.signMessage(message);
+      unsubscribe = () => subscription.cancel();
+  };
 
-      // Send the message to Torii
-      const result = await client.sendMessage(
-        JSON.stringify(message),
-        signature
-      );
-
-      console.log("Player added successfully:", result);
-
-      // Fetch the added player to verify
-      const entities = await client.getEntities({
-        query: {
-          world: {
-            Player: {
-              $: {
-                where: { id: { $eq: playerData.player_id } },
-              },
-            },
-          },
-        },
-      });
-
-      console.log("Entities retrieved after adding player:", entities);
-    } catch (error) {
-      console.error("Error adding player:", error);
-    }
+  if (account) {
+      subscribe(account);
   }
 
-  // Trigger addPlayer when client and account are ready
-  useEffect(() => {
-    if (client && account) {
-      addPlayer();
+  return () => {
+      if (unsubscribe) {
+          unsubscribe();
+      }
+  };
+}, [sdk, account]);
+
+
+
+useEffect(() => {
+  const fetchEntities = async (account) => {
+      try {
+          await sdk.getEntities({
+              query: new QueryBuilder()
+                  .namespace("dojo_starter", (n) =>
+                      n.entity("Player", (e) =>
+                          e.eq(
+                              "health",
+                              100
+                          )
+                      )
+                  )
+                  .build(),
+              callback: (resp) => {
+                  if (resp.error) {
+                      console.error(
+                          "resp.error.message:",
+                          resp.error.message
+                      );
+                      return;
+                  }
+                  if (resp.data) {
+                      state.setEntities(
+                          resp.data 
+                      );
+                  }
+              },
+          });
+      } catch (error) {
+          console.error("Error querying entities:", error);
+      }
+  };
+
+  if (account) {
+      fetchEntities(account);
+  }
+}, [sdk, account]);
+
+const moves = useModel(entityId , ModelsMapping.Player);
+// const position = useModel(entityId , ModelsMapping.Position);
+
+const spawnHandler = async () => {
+  try {
+          const res = await spawn();
+          console.log(res);
+      } catch (error) {
+          console.log(error);
+  }
+  };
+
+
+
+  const updateHandler = async () => {
+    try {
+      console.log("client", client);
+      
+            const res = await client.actions.updatePlayer(account,"88", "screwdriver");
+            console.log(res);
+        } catch (error) {
+            console.log(error);
     }
-  }, [client, account]);
+  };
+
+
+
+
 
   return (
     <>
@@ -120,6 +167,20 @@ function App() {
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
+        <button onClick={spawnHandler}>Spawn</button>
+
+        <div className="col-span-3 text-center text-base text-white">
+                                Health:{" "}
+                                {moves ? `${moves.health}` : "Need to Spawn"}
+                            </div>
+        <div className="col-span-3 text-center text-base text-white">
+                                Health:{" "}
+                                {moves ? `${moves.tool.toString()}` : "Need to Spawn"}
+                            </div>
+
+                            <div className="col-span-3 text-center text-base text-white " onClick={updateHandler}>
+Update
+                            </div>
       </div>
     </>
   );
