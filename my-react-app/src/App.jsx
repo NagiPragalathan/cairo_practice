@@ -147,6 +147,18 @@ const spawnHandler = async () => {
     }
   };
 
+  const getToolName = (hex) => {
+    try {
+      const hexWithoutPrefix = hex.slice(2);
+      const bytes = new Uint8Array(hexWithoutPrefix.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+      const decoder = new TextDecoder();
+      return decoder.decode(bytes).replace(/\x00/g, '');
+    } catch (error) {
+      console.error("Error decoding hex:", error);
+      return "";
+    }
+  };
+
 
 
 
@@ -175,7 +187,7 @@ const spawnHandler = async () => {
                             </div>
         <div className="col-span-3 text-center text-base text-white">
                                 Health:{" "}
-                                {moves ? `${moves.tool.toString()}` : "Need to Spawn"}
+                                {moves ? `${getToolName(moves.tool.toString())}` : "Need to Spawn"}
                             </div>
 
                             <div className="col-span-3 text-center text-base text-white " onClick={updateHandler}>

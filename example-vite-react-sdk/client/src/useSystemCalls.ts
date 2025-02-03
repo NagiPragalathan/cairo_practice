@@ -49,6 +49,8 @@ export const useSystemCalls = () => {
         });
 
         try {
+
+            console.log(client.actions);
             // Execute the spawn action from the client
             await client.actions.spawn(account!);
 
