@@ -20,8 +20,11 @@ scarb test
 it will automaticaly run the src/lib.cairo file
 scarb cairo-run
 
+-----------------------------------------
+sozo
 
-
+sozo init new_project
+sozo init beach_ball
 
 -----------------------------------------
     /*
@@ -66,4 +69,4 @@ torii -w 0x0190386ce184452b6fed8ff0b17b4d42ea47cdf8a2d1f0a98be083f53b41662f --ht
 
 2. sozo migrate
 
-3.torii -w 0x07bfc0169f3e20d0144b6e830bfbc2709906d91a76ece26fefab062fd87f738e --http.cors_origins '*'
+3.torii -w 0x0190386ce184452b6fed8ff0b17b4d42ea47cdf8a2d1f0a98be083f53b41662f --http.cors_origins '*'
